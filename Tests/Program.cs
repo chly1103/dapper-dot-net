@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Data.OracleClient;
 using System.Data.SqlClient;
 using System.Reflection;
 
@@ -28,7 +29,7 @@ namespace SqlMapper
     class Program
     {
 
-        public static readonly string connectionString = "Data Source=.;Initial Catalog=tempdb;Integrated Security=True";
+        public static readonly string connectionString = @"Data Source=.\SQLEXPRESS;Initial Catalog=tempdb;Integrated Security=True";
 
         public static SqlConnection GetOpenConnection()
         {
@@ -36,6 +37,15 @@ namespace SqlMapper
             connection.Open();
             return connection;
         }
+
+        public static OracleConnection GetOracleConnection()
+        {
+            string oracleConnectionString = "Data Source=apgis;User Id=gis;Password=gis;";
+            var connection = new OracleConnection(oracleConnectionString);
+            connection.Open();
+            return connection;
+        }
+
 
         static void RunPerformanceTests()
         {
@@ -49,7 +59,8 @@ namespace SqlMapper
         {
 
 #if DEBUG
-            RunTests();
+//            RunTests();
+            RunOracleTests();
 #else 
             EnsureDBSetup();
             RunPerformanceTests();
@@ -127,6 +138,35 @@ end
             }
             Console.WriteLine();
             if(fail == 0)
+            {
+                Console.WriteLine("(all tests successful)");
+            }
+            else
+            {
+                Console.WriteLine("#### FAILED: {0}", fail);
+            }
+        }
+
+        private static void RunOracleTests()
+        {
+            var tester = new OracleTest();
+            int fail = 0;
+            foreach (var method in typeof(OracleTest).GetMethods(BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly))
+            {
+                Console.Write("Running " + method.Name);
+                try
+                {
+                    method.Invoke(tester, null);
+                    Console.WriteLine(" - OK!");
+                }
+                catch (Exception ex)
+                {
+                    fail++;
+                    Console.WriteLine(" - " + ex.Message);
+                }
+            }
+            Console.WriteLine();
+            if (fail == 0)
             {
                 Console.WriteLine("(all tests successful)");
             }

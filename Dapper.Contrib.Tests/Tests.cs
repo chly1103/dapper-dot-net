@@ -132,6 +132,7 @@ namespace Dapper.Contrib.Tests
                 var justId = builder.AddTemplate("SELECT /**select**/ FROM Users");
                 var all = builder.AddTemplate("SELECT Name, /**select**/, Age FROM Users");
 
+
                 builder.Select("Id");
 
                 var ids = connection.Query<int>(justId.RawSql, justId.Parameters);

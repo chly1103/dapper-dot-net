@@ -1,6 +1,7 @@
 ﻿//#define POSTGRESQL // uncomment to run postgres tests
 using System;
 using System.Collections.Generic;
+using System.Data.OracleClient;
 using System.Data.SqlClient;
 using System.Linq;
 using Dapper;
@@ -20,7 +21,8 @@ namespace SqlMapper
     class Tests
     {
         SqlConnection connection = Program.GetOpenConnection();
-
+         
+         
         public class AbstractInheritance
         {
             public abstract class Order
@@ -29,12 +31,22 @@ namespace SqlMapper
                 protected int Protected { get; set; }
                 public int Public { get; set; }
 
-                public int ProtectedVal { get { return Protected; } }
+                public int ProtectedVal
+                {
+                    get { return Protected; }
+                }
             }
 
-            public class ConcreteOrder : Order
+            public interface ILook
+            {
+                int Price { get; set; }
+            }
+
+            public class ConcreteOrder : Order, ILook
             {
                 public int Concrete { get; set; }
+
+                public int Price { get; set; }
             }
         }
 
@@ -64,12 +76,13 @@ namespace SqlMapper
         // http://stackoverflow.com/q/8593871
         public void TestAbstractInheritance() 
         {
-            var order = connection.Query<AbstractInheritance.ConcreteOrder>("select 1 Internal,2 Protected,3 [Public],4 Concrete").First();
+            var order = connection.Query<AbstractInheritance.ConcreteOrder>("select 22 price, 1 Internal,2 Protected,3 [Public],4 Concrete").First();
 
             order.Internal.IsEqualTo(1);
             order.ProtectedVal.IsEqualTo(2);
             order.Public.IsEqualTo(3);
             order.Concrete.IsEqualTo(4);
+            order.Price.IsEqualTo(22);
         }
 
         public void TestListOfAnsiStrings()
@@ -872,7 +885,7 @@ end");
                 (sql, (p, a, e) => Tuple.Create(p, a, e), splitOn: "AddressId,Id").First();
 
             personWithAddress.Item1.PersonId.IsEqualTo(1);
-            personWithAddress.Item1.Name.IsEqualTo("bob");
+            personWithAddress.Item1.Name.IsEqualTo("bob"); 
             personWithAddress.Item2.AddressId.IsEqualTo(2);
             personWithAddress.Item2.Name.IsEqualTo("abc street");
             personWithAddress.Item2.PersonId.IsEqualTo(1);
@@ -885,6 +898,7 @@ end");
         public void TestFastExpandoSupportsIDictionary()
         {
             var row = connection.Query("select 1 A, 'two' B").First() as IDictionary<string, object>;
+            
             row["A"].IsEqualTo(1);
             row["B"].IsEqualTo("two");
         }
@@ -1453,7 +1467,7 @@ Order by p.Id";
             public int Value { get; set; }
         }
         public void TestInt16Usage()
-        {
+        {  
             connection.Query<short>("select cast(42 as smallint)").Single().IsEqualTo((short)42);
             connection.Query<short?>("select cast(42 as smallint)").Single().IsEqualTo((short?)42);
             connection.Query<short?>("select cast(null as smallint)").Single().IsEqualTo((short?)null);

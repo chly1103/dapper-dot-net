@@ -120,6 +120,7 @@
     <Reference Include="System.Core" />
     <Reference Include="System.Data.Entity" />
     <Reference Include="System.Data.Linq" />
+    <Reference Include="System.Data.OracleClient" />
     <Reference Include="System.Data.SqlServerCe, Version=4.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\SqlServerCompact.4.0.8482.1\lib\System.Data.SqlServerCe.dll</HintPath>
@@ -147,6 +148,7 @@
     <Compile Include="Linq2Sql\Post.cs" />
     <Compile Include="Massive\Massive.cs" />
     <Compile Include="NHibernate\NHibernateHelper.cs" />
+    <Compile Include="OracleTest.cs" />
     <Compile Include="PerformanceTests.cs" />
     <Compile Include="PetaPoco\PetaPoco.cs" />
     <Compile Include="Program.cs" />
@@ -224,7 +226,9 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="NHibernate\hibernate.cfg.xml" />
-    <Content Include="NHibernate\Post.hbm.xml" />
+    <Content Include="NHibernate\Post.hbm.xml">
+      <SubType>Designer</SubType>
+    </Content>
     <Content Include="OrmLite\ServiceStack.Common.dll" />
     <Content Include="OrmLite\ServiceStack.Interfaces.dll" />
     <Content Include="OrmLite\ServiceStack.OrmLite.dll" />

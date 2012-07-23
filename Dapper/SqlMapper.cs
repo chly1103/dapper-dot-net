@@ -1553,11 +1553,12 @@ this IDbConnection cnn, string sql, Func<TFirst, TSecond, TThird, TFourth, TRetu
 
         /// <summary>
         /// Internal use only
+        /// 生成根据类属性与字段，读取IDataReader的值
         /// </summary>
         /// <param name="type"></param>
         /// <param name="reader"></param>
-        /// <param name="startBound"></param>
-        /// <param name="length"></param>
+        /// <param name="startBound">从第几个开始读取Reader</param>
+        /// <param name="length">读取多少个Reader值</param>
         /// <param name="returnNullIfFirstMissing"></param>
         /// <returns></returns>
         public static Func<IDataReader, object> GetTypeDeserializer(
@@ -1595,6 +1596,7 @@ this IDbConnection cnn, string sql, Func<TFirst, TSecond, TThird, TFourth, TRetu
                 names.Add(reader.GetName(i));
             }
 
+            //Check the propertys or fields in the IDataReader
             var setters = (
                             from n in names
                             let prop = properties.FirstOrDefault(p => string.Equals(p.Name, n, StringComparison.Ordinal)) // property case sensitive first
